@@ -5,7 +5,7 @@ import { fetchMovies } from "../../services/movieService";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieGrid from "../MovieGrid/MovieGrid";
-import type { fetchMovesResponse, Movie } from "../../types/movie";
+import type { Movie } from "../../types/movie";
 import MovieModal from "../MovieModal/MovieModal";
 import ReactPaginate from "react-paginate";
 import css from "./App.module.css";
@@ -28,7 +28,7 @@ export default function App() {
 
   const closeModal = () => setSelectedMovie(null);
 
-  const { data, isError, isLoading, isSuccess } = useQuery<fetchMovesResponse>({
+  const { data, isError, isLoading, isSuccess } = useQuery({
     queryKey: ["movie", searchValue, page],
     queryFn: () => fetchMovies(searchValue, page),
     enabled: Boolean(searchValue),
