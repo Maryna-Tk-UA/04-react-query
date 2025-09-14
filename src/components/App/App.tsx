@@ -5,7 +5,7 @@ import { fetchMovies } from "../../services/movieService";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieGrid from "../MovieGrid/MovieGrid";
-import type { fetchMovesProps, Movie } from "../../types/movie";
+import type { fetchMovesResponse, Movie } from "../../types/movie";
 import MovieModal from "../MovieModal/MovieModal";
 import ReactPaginate from "react-paginate";
 import css from "./App.module.css";
@@ -28,7 +28,7 @@ export default function App() {
 
   const closeModal = () => setSelectedMovie(null);
 
-  const { data, isError, isLoading, isSuccess } = useQuery<fetchMovesProps>({
+  const { data, isError, isLoading, isSuccess } = useQuery<fetchMovesResponse>({
     queryKey: ["movie", searchValue, page],
     queryFn: () => fetchMovies(searchValue, page),
     enabled: Boolean(searchValue),
@@ -36,13 +36,13 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (isSuccess && data?.results.length === 0) {
+    if (isSuccess && data.total_results === 0) {
       toast.error("No movies found for your request.", {
         position: "top-center",
         duration: 2500,
       });
     }
-  }, [data?.results.length, isSuccess]);
+  }, [data?.total_results, isSuccess]);
 
   const totalPages = data?.total_pages ?? 0;
   const hasResults = (data?.results?.length ?? 0) > 0;
@@ -102,64 +102,3 @@ export default function App() {
 
 
 
-// import { useState } from "react";
-// import { fetchMovies } from "../../services/movieService";
-// import SearchBar from "../SearchBar/SearchBar";
-// import styles from "./App.module.css";
-// import type { Movie } from "../../types/movie";
-// import toast, { Toaster } from "react-hot-toast";
-// import MovieGrid from "../MovieGrid/MovieGrid";
-// import Loader from "../Loader/Loader";
-// import ErrorMessage from "../ErrorMessage/ErrorMessage";
-// import MovieModal from "../MovieModal/MovieModal";
-
-// export default function App() {
-//   const [movies, setMovies] = useState<Movie[]>([]);
-//   const [loading, setLoading] = useState(false);
-//   const [isError, setIsError] = useState(false);
-
-//   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
-
-//   const handleSearch = async (query: string) => {
-//     try {
-//         setIsError(false);
-//         setLoading(true);
-
-//       const data = await fetchMovies(query);
-
-//       if (data.results.length === 0) {
-//         toast.error("No movies found for your request.", {
-//           position: "top-center",
-//           duration: 2500,
-//         });
-//       }
-//       setMovies(data.results);
-//     } catch {
-//       setIsError(true);
-//       setMovies([]);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleSelect = (movie: Movie) => {
-//     setSelectedMovie(movie);
-//   };
-
-//   const closeModal = () => setSelectedMovie(null);
-
-//   return (
-//     <div className={styles.app}>
-//       <Toaster />
-//       <SearchBar onSubmit={handleSearch} />
-//       {loading
-//         ? (<Loader />)
-//         : isError
-//           ? (<ErrorMessage />)
-//           : movies.length > 0 && (<MovieGrid onSelect={handleSelect} movies={movies} />)}
-//       {selectedMovie
-//         ?<MovieModal movie={selectedMovie} onClose={closeModal} />
-//         : null}
-//     </div>
-//   );
-// }
